@@ -104,5 +104,5 @@ def test_normal_user_permission_by_headers(
 
 
 def test_logout(client: TestClient, settings: config.Settings) -> None:
-    r = client.post(settings.AUTH_URL + "/logout")
+    r = client.post(f"{settings.AUTH_URL}/logout")
     assert r.status_code == 200

@@ -38,10 +38,12 @@ def read_users(
     Retrieve users.
     """
     print(commons["q"], flush=True)
-    users = crud.user.get_multi(
-        collection, q=commons["q"], skip=commons["skip"], limit=commons["limit"]
+    return crud.user.get_multi(
+        collection,
+        q=commons["q"],
+        skip=commons["skip"],
+        limit=commons["limit"],
     )
-    return users
 
 
 @router.post("/", response_model=schemas.UserFromDB)

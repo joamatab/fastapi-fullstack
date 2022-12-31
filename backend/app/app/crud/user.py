@@ -11,18 +11,15 @@ class CRUDUser(CRUDBase[schemas.UserInDB, schemas.UserCreate, schemas.UserUpdate
     def get_by_email(
         self, collection: Any, email: Union[str, EmailStr]
     ) -> Optional[schemas.UserInDB]:
-        user = collection.find_one({"email": email})
-        return user
+        return collection.find_one({"email": email})
 
     def authenticate(
         self, collection: Any, email: Union[str, EmailStr], password: str
     ) -> Optional[schemas.UserInDB]:
-        user = self.get_by_email(collection, email=email)
-        if not user:
+        if user := self.get_by_email(collection, email=email):
+            return user if verify_password(password, user["hashed_password"]) else None
+        else:
             return None
-        if not verify_password(password, user["hashed_password"]):
-            return None
-        return user
 
     def is_active(self, user: schemas.UserInDB) -> bool:
         return user["is_active"]

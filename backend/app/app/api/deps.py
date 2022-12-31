@@ -60,7 +60,7 @@ async def verify_content_length(content_length: int = Header(...)) -> None:
 async def verify_content_type(content_type: int = Header(...)) -> None:
     accepted_types = ["csv", "png"]
     if content_type not in accepted_types:
-        raise HTTPException(status_code=400, detail=f"Incorrect file type")
+        raise HTTPException(status_code=400, detail="Incorrect file type")
 
 
 async def verify_key(x_api_key: str = Header(...)) -> None:
@@ -77,7 +77,7 @@ def get_current_user(
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
-        authenticate_value = f"Bearer"
+        authenticate_value = "Bearer"
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

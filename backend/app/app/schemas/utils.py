@@ -35,22 +35,20 @@ def as_form(cls: Type[BaseModel]) -> Type[BaseModel]:
                 field.alias,
                 inspect.Parameter.POSITIONAL_ONLY,
                 annotation=cls.__annotations__[field.name],
-                default=(
-                    Form(
-                        field.default if not field.required else ...,
-                        alias=field.alias,
-                        description=getattr(field.field_info, "description", None),
-                        ge=getattr(field.field_info, "ge", None),
-                        gt=getattr(field.field_info, "gt", None),
-                        le=getattr(field.field_info, "le", None),
-                        lt=getattr(field.field_info, "lt", None),
-                        max_length=getattr(field.field_info, "max_length", None),
-                        min_length=getattr(field.field_info, "min_length", None),
-                        regex=getattr(field.field_info, "regex", None),
-                        title=getattr(field.field_info, "title", None),
-                        media_type=getattr(field.field_info, "media_type", None),
-                        **field.field_info.extra,
-                    )
+                default=Form(
+                    ... if field.required else field.default,
+                    alias=field.alias,
+                    description=getattr(field.field_info, "description", None),
+                    ge=getattr(field.field_info, "ge", None),
+                    gt=getattr(field.field_info, "gt", None),
+                    le=getattr(field.field_info, "le", None),
+                    lt=getattr(field.field_info, "lt", None),
+                    max_length=getattr(field.field_info, "max_length", None),
+                    min_length=getattr(field.field_info, "min_length", None),
+                    regex=getattr(field.field_info, "regex", None),
+                    title=getattr(field.field_info, "title", None),
+                    media_type=getattr(field.field_info, "media_type", None),
+                    **field.field_info.extra
                 ),
             )
         )
@@ -108,14 +106,14 @@ class Scope(str):
     def validate(cls, v: str) -> str:
         if not isinstance(v, str):
             raise TypeError("string required")
-        m = scope_regex.fullmatch(v.lower())
-        if not m:
+        if m := scope_regex.fullmatch(v.lower()):
+            # you could also return a string here which would mean model.scope
+            # would be a string, pydantic won't care but you could end up with some
+            # confusion since the value's type won't match the type annotation
+            # exactly
+            return cls(m.group(0))
+        else:
             raise ValueError("invalid scope format")
-        # you could also return a string here which would mean model.scope
-        # would be a string, pydantic won't care but you could end up with some
-        # confusion since the value's type won't match the type annotation
-        # exactly
-        return cls(m.group(0))
 
     def __repr__(self) -> str:
         return f"Scope({super().__repr__()})"

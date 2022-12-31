@@ -21,11 +21,10 @@ class UserBase(BaseModel):
 
     @validator("email")
     def email_validate_provider(cls, v: EmailStr) -> EmailStr:
-        if settings.EMAIL_PROVIDER_RESTRICTION:
-            if not any(
-                provider in v for provider in settings.ALLOWED_EMAIL_PROVIDER_LIST
-            ):
-                raise ValueError("Invalid email provider")
+        if settings.EMAIL_PROVIDER_RESTRICTION and all(
+            provider not in v for provider in settings.ALLOWED_EMAIL_PROVIDER_LIST
+        ):
+            raise ValueError("Invalid email provider")
         return v
 
 
