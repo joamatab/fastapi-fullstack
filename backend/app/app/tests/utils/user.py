@@ -23,8 +23,7 @@ def get_superuser_token_headers(
     r = client.post(settings.TOKEN_URL, data=login_data)
     response = r.json()
     auth_token = response["access_token"]
-    headers = {"Authorization": f"Bearer {auth_token}"}
-    return headers
+    return {"Authorization": f"Bearer {auth_token}"}
 
 
 def get_normal_user_token_headers(
@@ -38,8 +37,7 @@ def get_normal_user_token_headers(
     r = client.post(settings.TOKEN_URL, data=login_data)
     response = r.json()
     auth_token = response["access_token"]
-    headers = {"Authorization": f"Bearer {auth_token}"}
-    return headers
+    return {"Authorization": f"Bearer {auth_token}"}
 
 
 def get_custom_user_token_headers(
@@ -52,12 +50,11 @@ def get_custom_user_token_headers(
     email = random_email()
     password = random_lower_string()
     obj_in = schemas.UserCreate(
-        email=email, password=password, scopes=["user:" + email] + scopes
+        email=email, password=password, scopes=[f"user:{email}"] + scopes
     )
     crud.user.create(collection, obj_in)
     login_data = {"username": email, "password": password}
     r = client.post(settings.TOKEN_URL, data=login_data)
     response = r.json()
     auth_token = response["access_token"]
-    headers = {"Authorization": f"Bearer {auth_token}"}
-    return headers
+    return {"Authorization": f"Bearer {auth_token}"}

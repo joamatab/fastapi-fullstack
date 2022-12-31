@@ -28,18 +28,17 @@ def read_heroes(
     offset: int = 0,
     limit: int = Query(default=100, lte=100),
 ) -> List[models.Hero]:
-    heroes = session.exec(select(models.Hero).offset(offset).limit(limit)).all()
-    return heroes
+    return session.exec(select(models.Hero).offset(offset).limit(limit)).all()
 
 
 @router.get("/{hero_id}", response_model=models.HeroReadWithTeam)
 def read_hero(
     *, session: Session = Depends(deps.get_session), hero_id: int
 ) -> models.Hero:
-    hero = session.get(models.Hero, hero_id)
-    if not hero:
+    if hero := session.get(models.Hero, hero_id):
+        return hero
+    else:
         raise HTTPException(status_code=404, detail="Hero not found")
-    return hero
 
 
 @router.patch("/{hero_id}", response_model=models.HeroRead)
